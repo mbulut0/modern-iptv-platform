@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Modern IPTV/OTT Platform
 
-## Getting Started
+Modern bir IPTV/OTT (Over-The-Top) platformu. Netflix benzeri sik ve animasyonlu bir arayuze sahip, canli TV kanallari ile istege bagli film/dizi iceriklerini bir araya getiren, tum cihazlarda sorunsuz calisan bir platform.
 
-First, run the development server:
+## Ozellikler
+
+- **Modern ve Sik Arayuz**: Netflix tarzinda modern bir tasarim, animasyonlar ve akici gecisler
+- **Tamamen Responsive**: Mobil, tablet ve masaustu dahil tum cihaz boyutlarina uyumlu
+- **Yuksek Performans**: Sanal listeleme, lazy loading, onbellekleme ve kod ayristirma ile optimize edilmis
+- **Xtream Codes Destegi**: IPTV servis saglayicilarina ait Xtream Codes panellerindeki hesap bilgileriyle giris
+- **Icerik Kategorileri**: Canli TV, Filmler ve Diziler
+- **Gelismis HTML5 Player**: HLS ve MPEG-DASH destegi, altyazi ve coklu dil destegi
+- **EPG Entegrasyonu**: Canli TV icin elektronik program rehberi
+- **TMDB Entegrasyonu**: Film ve dizi detaylarini zenginlestirme
+- **Kullanici Tercihleri**: Favoriler, izleme gecmisi, tema secimi, dil secimi, ebeveyn kontrolu
+
+## Teknoloji Yigini
+
+- **Next.js**: React tabanli web framework
+- **TypeScript**: Tip guvenligi icin
+- **Tailwind CSS**: Hizli ve tutarli stil vermek icin
+- **ShadCN UI**: Radix UI tabanli bilesen seti
+- **Framer Motion**: Animasyonlar icin
+- **Zustand**: State yonetimi icin
+- **React Query**: Veri yonetimi icin
+- **HLS.js**: Video oynatma icin
+- **React Hook Form**: Form yonetimi icin
+- **Zod**: Sema dogrulama icin
+
+## Kurulum
 
 ```bash
+# Repoyu klonlayin
+git clone https://github.com/mbulut0/modern-iptv-platform.git
+cd modern-iptv-platform
+
+# Bagimlilikları yukleyin
+npm install
+
+# Gelistirme sunucusunu baslatin
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Kullanim
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Giris ekraninda Xtream Codes bilgilerinizi girin (sunucu URL, kullanici adi, sifre)
+2. Ana sayfada favori iceriklerinizi ve son izlediklerinizi goruntuleyin
+3. Canli TV, Filmler ve Diziler bolumlerinde icerikleri kesfedin
+4. Icerikleri favorilere ekleyin ve izleme gecmisinizi takip edin
+5. Profil sayfasinda hesap bilgilerinizi ve istatistiklerinizi goruntuleyin
+6. Ayarlar sayfasinda tema, dil ve diger tercihleri ozellestirin
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Ekran Goruntuleri
 
-## Learn More
+(Ekran goruntuleri eklenecek)
 
-To learn more about Next.js, take a look at the following resources:
+## Lisans
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+MIT
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Iletisim
 
-## Deploy on Vercel
+Mehmet Bulut - mb07090709@gmail.com
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Proje Linki: [https://github.com/mbulut0/modern-iptv-platform](https://github.com/mbulut0/modern-iptv-platform)
