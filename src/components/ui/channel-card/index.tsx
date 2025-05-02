@@ -11,6 +11,7 @@ import { useAuthStore } from '@/lib/store/auth-store';
 import { getLiveStreamUrl } from '@/lib/api/xtream';
 import { Star, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getProxiedImageUrl, getFallbackImageUrl } from '@/lib/utils/image-utils';
 
 interface ChannelCardProps {
   channel: LiveStream;
@@ -102,12 +103,13 @@ export function ChannelCard({
           <div className="relative aspect-video bg-muted">
             {!imageError && channel.stream_icon ? (
               <Image
-                src={channel.stream_icon}
+                src={getProxiedImageUrl(channel.stream_icon)}
                 alt={channel.name}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-contain"
                 onError={() => setImageError(true)}
+                unoptimized
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-muted">

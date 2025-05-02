@@ -10,6 +10,7 @@ import { useUserPreferencesStore } from '@/lib/store/user-preferences-store';
 import { Star, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTMDBImageUrl } from '@/lib/api/tmdb';
+import { getProxiedImageUrl, getFallbackImageUrl } from '@/lib/utils/image-utils';
 
 interface MovieCardProps {
   movie: Movie;
@@ -63,12 +64,13 @@ export function MovieCard({ movie, tmdbPoster }: MovieCardProps) {
           <div className="relative aspect-[2/3] bg-muted">
             {!imageError && posterImage ? (
               <Image
-                src={posterImage}
+                src={getProxiedImageUrl(posterImage)}
                 alt={movie.name}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
                 onError={() => setImageError(true)}
+                unoptimized
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-muted">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,7 +24,16 @@ const loginSchema = z.object({
 export function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { login, error, clearError } = useAuthStore();
+  const { login, error, clearError, isAuthenticated } = useAuthStore();
+  
+  // Check if already authenticated
+  useEffect(() => {
+    console.log('LoginForm: Checking authentication status');
+    if (isAuthenticated) {
+      console.log('LoginForm: User is already authenticated, redirecting to dashboard');
+      router.push('/live');
+    }
+  }, [isAuthenticated, router]);
   
   // Initialize form
   const form = useForm<XtreamCredentials>({
@@ -42,22 +51,58 @@ export function LoginForm() {
     clearError();
     
     try {
+      console.log('Login attempt with data:', data);
+      
       // Format server URL if needed
       let serverUrl = data.server;
       if (!serverUrl.startsWith('http://') && !serverUrl.startsWith('https://')) {
         serverUrl = `http://${serverUrl}`;
       }
       
+      console.log('Formatted server URL:', serverUrl);
+      
       // Attempt login
-      await login({
+      const result = await login({
         ...data,
         server: serverUrl,
       });
       
-      // Redirect to dashboard on success
-      router.push('/live');
+      console.log('Login result:', result);
+      
+      // Check if authentication was successful
+      const authState = useAuthStore.getState();
+      console.log('Auth state after login:', {
+        isAuthenticated: authState.isAuthenticated,
+        hasUser: !!authState.user,
+        hasCredentials: !!authState.credentials,
+        error: authState.error
+      });
+      
+      if (!authState.isAuthenticated) {
+        throw new Error('Authentication failed: Invalid response from server');
+      }
+      
+      console.log('Login successful, redirecting...');
+      
+      // Add a small delay to ensure state is updated
+      setTimeout(() => {
+        // Check if authentication was successful
+        const currentState = useAuthStore.getState();
+        console.log('Current auth state after login:', {
+          isAuthenticated: currentState.isAuthenticated,
+          hasUser: !!currentState.user
+        });
+        
+        // Redirect to dashboard on success
+        router.push('/live');
+      }, 500);
     } catch (error) {
       console.error('Login failed:', error);
+      // Display error to user
+      form.setError('server', { 
+        type: 'manual', 
+        message: error instanceof Error ? error.message : 'Authentication failed' 
+      });
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +124,13 @@ export function LoginForm() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              console.log('Form submitted');
+              const formData = form.getValues();
+              console.log('Form values:', formData);
+              onSubmit(formData);
+            }} className="space-y-4">
               <FormField
                 control={form.control}
                 name="server"
@@ -145,6 +196,11 @@ export function LoginForm() {
                 type="submit" 
                 className="w-full" 
                 disabled={isLoading}
+                onClick={() => {
+                  console.log('Login button clicked');
+                  const formData = form.getValues();
+                  console.log('Form values on click:', formData);
+                }}
               >
                 {isLoading ? 'Connecting...' : 'Login'}
               </Button>

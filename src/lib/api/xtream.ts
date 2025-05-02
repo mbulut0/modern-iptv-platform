@@ -28,33 +28,69 @@ const createXtreamClient = (credentials: XtreamCredentials) => {
   });
 };
 
-// Authentication
+// Authentication using our proxy API
 export const authenticate = async (credentials: XtreamCredentials): Promise<UserInfo> => {
   try {
-    const client = createXtreamClient(credentials);
-    const response = await client.get('player_api.php');
+    console.log('Authenticating with credentials:', credentials);
     
-    if (response.data.user_info) {
-      return response.data.user_info as UserInfo;
+    // Use our proxy API instead of direct request
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password
+    });
+    
+    console.log('Auth response status:', response.status);
+    console.log('Auth response data type:', typeof response.data);
+    
+    // Validate response
+    if (!response.data) {
+      throw new Error('Authentication failed: Empty response from server');
     }
     
+    // Log the response structure
+    console.log('Response keys:', Object.keys(response.data));
+    
+    if (response.data && response.data.user_info) {
+      const userInfo = response.data.user_info as UserInfo;
+      console.log('User info extracted:', {
+        username: userInfo.username,
+        status: userInfo.status,
+        exp_date: userInfo.exp_date,
+        active_cons: userInfo.active_cons
+      });
+      return userInfo;
+    }
+    
+    // If we get here, the response format is invalid
+    console.error('Invalid response format:', response.data);
     throw new Error('Authentication failed: Invalid response format');
   } catch (error) {
+    console.error('Authentication error details:', error);
+    
     if (axios.isAxiosError(error)) {
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        console.error('Error status:', error.response.status);
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      }
+      
       throw new Error(`Authentication failed: ${error.message}`);
     }
+    
     throw error;
   }
 };
 
-// Live TV
+// Live TV using proxy API
 export const getLiveCategories = async (credentials: XtreamCredentials): Promise<LiveCategory[]> => {
   try {
-    const client = createXtreamClient(credentials);
-    const response = await client.get('player_api.php', {
-      params: {
-        action: 'get_live_categories'
-      }
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password,
+      action: 'get_live_categories'
     });
     
     return response.data as LiveCategory[];
@@ -71,16 +107,19 @@ export const getLiveStreams = async (
   categoryId?: string
 ): Promise<LiveStream[]> => {
   try {
-    const client = createXtreamClient(credentials);
-    const params: Record<string, string> = {
-      action: 'get_live_streams'
-    };
+    const params: Record<string, string> = {};
     
     if (categoryId) {
       params.category_id = categoryId;
     }
     
-    const response = await client.get('player_api.php', { params });
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password,
+      action: 'get_live_streams',
+      params
+    });
     
     return response.data as LiveStream[];
   } catch (error) {
@@ -97,9 +136,7 @@ export const getEPG = async (
   limit?: number
 ) => {
   try {
-    const client = createXtreamClient(credentials);
     const params: Record<string, string | number> = {
-      action: 'get_short_epg',
       stream_id: streamId
     };
     
@@ -107,7 +144,13 @@ export const getEPG = async (
       params.limit = limit;
     }
     
-    const response = await client.get('player_api.php', { params });
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password,
+      action: 'get_short_epg',
+      params
+    });
     
     return response.data.epg_listings;
   } catch (error) {
@@ -118,14 +161,14 @@ export const getEPG = async (
   }
 };
 
-// Movies (VOD)
+// Movies (VOD) using proxy API
 export const getMovieCategories = async (credentials: XtreamCredentials): Promise<MovieCategory[]> => {
   try {
-    const client = createXtreamClient(credentials);
-    const response = await client.get('player_api.php', {
-      params: {
-        action: 'get_vod_categories'
-      }
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password,
+      action: 'get_vod_categories'
     });
     
     return response.data as MovieCategory[];
@@ -142,16 +185,19 @@ export const getMovies = async (
   categoryId?: string
 ): Promise<Movie[]> => {
   try {
-    const client = createXtreamClient(credentials);
-    const params: Record<string, string> = {
-      action: 'get_vod_streams'
-    };
+    const params: Record<string, string> = {};
     
     if (categoryId) {
       params.category_id = categoryId;
     }
     
-    const response = await client.get('player_api.php', { params });
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password,
+      action: 'get_vod_streams',
+      params
+    });
     
     return response.data as Movie[];
   } catch (error) {
@@ -167,12 +213,16 @@ export const getMovieInfo = async (
   movieId: number
 ): Promise<Movie> => {
   try {
-    const client = createXtreamClient(credentials);
-    const response = await client.get('player_api.php', {
-      params: {
-        action: 'get_vod_info',
-        vod_id: movieId
-      }
+    const params: Record<string, string | number> = {
+      vod_id: movieId
+    };
+    
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password,
+      action: 'get_vod_info',
+      params
     });
     
     return response.data.info as Movie;
@@ -184,14 +234,14 @@ export const getMovieInfo = async (
   }
 };
 
-// Series
+// Series using proxy API
 export const getSeriesCategories = async (credentials: XtreamCredentials): Promise<SeriesCategory[]> => {
   try {
-    const client = createXtreamClient(credentials);
-    const response = await client.get('player_api.php', {
-      params: {
-        action: 'get_series_categories'
-      }
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password,
+      action: 'get_series_categories'
     });
     
     return response.data as SeriesCategory[];
@@ -208,16 +258,19 @@ export const getAllSeries = async (
   categoryId?: string
 ): Promise<Series[]> => {
   try {
-    const client = createXtreamClient(credentials);
-    const params: Record<string, string> = {
-      action: 'get_series'
-    };
+    const params: Record<string, string> = {};
     
     if (categoryId) {
       params.category_id = categoryId;
     }
     
-    const response = await client.get('player_api.php', { params });
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password,
+      action: 'get_series',
+      params
+    });
     
     return response.data as Series[];
   } catch (error) {
@@ -233,12 +286,16 @@ export const getSeriesInfo = async (
   seriesId: number
 ): Promise<{info: Series, episodes: Record<string, Episode[]>, seasons: Season[]}> => {
   try {
-    const client = createXtreamClient(credentials);
-    const response = await client.get('player_api.php', {
-      params: {
-        action: 'get_series_info',
-        series_id: seriesId
-      }
+    const params: Record<string, string | number> = {
+      series_id: seriesId
+    };
+    
+    const response = await axios.post('/api/xtream', {
+      server: credentials.server,
+      username: credentials.username,
+      password: credentials.password,
+      action: 'get_series_info',
+      params
     });
     
     return {

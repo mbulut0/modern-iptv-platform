@@ -18,7 +18,7 @@ const tmdbClient = axios.create({
 // Image URL helper
 export const getTMDBImageUrl = (path: string | null, size: string = 'w500'): string | null => {
   if (!path) return null;
-  return `https://image.tmdb.org/t/p/${size}${path}`;
+  return `/api/image-proxy?url=${encodeURIComponent(`https://image.tmdb.org/t/p/${size}${path}`)}`;
 };
 
 // Search for a movie by title and year
